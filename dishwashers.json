@@ -1,0 +1,29 @@
+[
+  {
+    "id": 3,
+    "type": "Portable",
+    "model": "Whirlpool WDF330",
+    "efficiency": 1.1,
+    "power": 1800.0,
+    "date": "2020-05-21",
+    "price": 299.99
+  },
+  {
+    "id": 1,
+    "type": "Compact",
+    "model": "Bosch Serie 2",
+    "efficiency": 1.2,
+    "power": 2000.0,
+    "date": "2022-03-15",
+    "price": 399.99
+  },
+  {
+    "id": 2,
+    "type": "Full-Size",
+    "model": "Siemens IQ500",
+    "efficiency": 1.5,
+    "power": 2200.0,
+    "date": "2021-07-10",
+    "price": 599.99
+  }
+]

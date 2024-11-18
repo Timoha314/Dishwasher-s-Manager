@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Dishwashers>
+    <Dishwasher>
+        <ID>3</ID>
+        <Type>Portable</Type>
+        <Model>Whirlpool WDF330</Model>
+        <EnginePower>1.1</EnginePower>
+        <MaxSpeed>1800.0</MaxSpeed>
+        <ReleaseDate>2020-05-21</ReleaseDate>
+        <Price>299.99</Price>
+    </Dishwasher>
+    <Dishwasher>
+        <ID>1</ID>
+        <Type>Compact</Type>
+        <Model>Bosch Serie 2</Model>
+        <EnginePower>1.2</EnginePower>
+        <MaxSpeed>2000.0</MaxSpeed>
+        <ReleaseDate>2022-03-15</ReleaseDate>
+        <Price>399.99</Price>
+    </Dishwasher>
+    <Dishwasher>
+        <ID>2</ID>
+        <Type>Full-Size</Type>
+        <Model>Siemens IQ500</Model>
+        <EnginePower>1.5</EnginePower>
+        <MaxSpeed>2200.0</MaxSpeed>
+        <ReleaseDate>2021-07-10</ReleaseDate>
+        <Price>599.99</Price>
+    </Dishwasher>
+</Dishwashers>
