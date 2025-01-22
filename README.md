@@ -1,53 +1,51 @@
-# Dishwasher's Manager
-**Описание проекта: Dishwasher's Manager**  
+# Dishwasher's Manager 
+**Dishwasher's Manager** is a desktop application developed using Java and the Swing library for managing a database of dishwashers. The application provides an intuitive graphical interface that allows you to perform key operations with data, such as adding, editing, deleting, sorting and searching.
 
-**Dishwasher's Manager** — это десктопное приложение, разработанное с использованием Java и библиотеки Swing, предназначенное для управления базой данных посудомоечных машин. Приложение предоставляет интуитивно понятный графический интерфейс, позволяющий выполнять ключевые операции с данными, такие как добавление, редактирование, удаление, сортировка и поиск.  
+### Main functions:
+1. **Adding new records**
+The user can add new dishwashers by specifying parameters such as ID, type, model, motor power, maximum speed, production date and price.
 
-### Основные функции:
-1. **Добавление новых записей**  
-   Пользователь может добавлять новые посудомоечные машины, указав такие параметры, как ID, тип, модель, мощность двигателя, максимальная скорость, дата выпуска и цена.  
+2. **Editing records**
+The ability to update information about the selected dishwasher directly from the table.
 
-2. **Редактирование записей**  
-   Возможность обновления информации о выбранной посудомоечной машине напрямую из таблицы.  
+3. **Delete records**
+Allows you to delete selected records from the database.
 
-3. **Удаление записей**  
-   Позволяет удалять выбранные записи из базы данных.  
+4. **Search**
+A search through the database is implemented. The user can enter a keyword, and the application will display only those records that contain this word.
 
-4. **Поиск**  
-   Реализован поиск по базе данных. Пользователь может ввести ключевое слово, и приложение отобразит только те записи, которые содержат это слово.  
+5. **Sorting**
+It is possible to sort records by price, maximum speed or engine power.
 
-5. **Сортировка**  
-   Доступна сортировка записей по цене, максимальной скорости или мощности двигателя.  
+6. **Saving and loading data**
+- Saving data to a text, XML or JSON file.
+- Loading data from external files with the specified formats.
 
-6. **Сохранение и загрузка данных**  
-   - Сохранение данных в текстовый, XML или JSON файл.  
-   - Загрузка данных из внешних файлов с указанными форматами.  
+7. **Archiving**
+It is planned to implement a data archiving function.
 
-7. **Архивация**  
-   Планируется реализация функции архивирования данных.  
+8. **Database integration**
+Using a Singleton approach to connect to and work with the database.
 
-8. **Интеграция с базой данных**  
-   Использование Singleton-подхода для подключения к базе данных и работы с ней.  
+### Technical details:
+- **Development language**: Java
+- **Graphical interface**: Swing
+- **Architecture**:
+- The program uses the MVC approach to separate logic, data and interface.
+- Data is stored in the `DishwasherList` object, and interaction with the database is implemented through the `DatabaseConnection` class.
 
-### Технические детали:
-- **Язык разработки**: Java  
-- **Графический интерфейс**: Swing  
-- **Архитектура**:  
-  - Программа использует MVC-подход для разделения логики, данных и интерфейса.  
-  - Данные хранятся в объекте `DishwasherList`, а взаимодействие с базой данных реализовано через класс `DatabaseConnection`.  
+- **File formats**:
+- Support for text, XML and JSON formats for working with files.
 
-- **Файловые форматы**:  
-  - Поддержка текстового, XML и JSON форматов для работы с файлами.  
+- **Modular structure**:
+Each functional element of the application is allocated to a separate module or class, which ensures ease of support and expansion.
 
-- **Модульная структура**:  
-  Каждый функциональный элемент приложения выделен в отдельный модуль или класс, что обеспечивает удобство поддержки и расширения.  
+### Target audience:
+The project will be useful for dishwasher manufacturers, distributors, home appliance stores and anyone who needs convenient management of large amounts of data on household appliances.
 
-### Целевая аудитория:
-Проект будет полезен производителям посудомоечных машин, дистрибьюторам, магазинам бытовой техники и всем, кому требуется удобное управление большим количеством данных о бытовых устройствах.  
+### Advantages:
+- Ease of use due to a clear interface.
+- Flexibility in working with data.
+- Extensibility for adding new functions (for example, connecting to cloud databases or integrating with other systems).
 
-### Преимущества:
-- Простота использования благодаря понятному интерфейсу.  
-- Гибкость в работе с данными.  
-- Расширяемость для добавления новых функций (например, подключения к облачным базам данных или интеграции с другими системами).  
-
-**Dishwasher's Manager** — это эффективное решение для управления информацией о посудомоечных машинах, которое упрощает работу с большими объемами данных.
+**Dishwasher's Manager** is an effective solution for managing information about dishwashers, which simplifies working with large amounts of data.
