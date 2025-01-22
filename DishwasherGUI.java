@@ -334,10 +334,41 @@ public class DishwasherGUI {
     }
 
 
-private class ArchiveButtonListener implements ActionListener {
+    private class ArchiveButtonListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            JOptionPane.showMessageDialog(frame, "Archiving not implemented yet.", "Information", JOptionPane.INFORMATION_MESSAGE);
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setMultiSelectionEnabled(true); // Allow multiple file selection
+            int result = fileChooser.showOpenDialog(frame);
+
+            if (result == JFileChooser.APPROVE_OPTION) {
+                File[] selectedFiles = fileChooser.getSelectedFiles();
+                String[] filePaths = new String[selectedFiles.length];
+                for (int i = 0; i < selectedFiles.length; i++) {
+                    filePaths[i] = selectedFiles[i].getAbsolutePath();
+                }
+
+                String archiveType = JOptionPane.showInputDialog(frame, "Enter archive type (zip/jar):", "zip");
+                if ("zip".equalsIgnoreCase(archiveType)) {
+                    try {
+                        Archiver.createZipArchive("archive.zip", filePaths);
+                        JOptionPane.showMessageDialog(frame, "ZIP archive created successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
+                    } catch (IOException ex) {
+                        JOptionPane.showMessageDialog(frame, "Error creating ZIP archive: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+                } else if ("jar".equalsIgnoreCase(archiveType)) {
+                    try {
+                        new Archiver().createJarArchive("archive.jar", filePaths);
+                        JOptionPane.showMessageDialog(frame, "JAR archive created successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
+                    } catch (IOException ex) {
+                        JOptionPane.showMessageDialog(frame, "Error creating JAR archive: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(frame, "Invalid archive type. Please choose 'zip' or 'jar'.", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            } else {
+                JOptionPane.showMessageDialog(frame, "File selection canceled.", "Info", JOptionPane.INFORMATION_MESSAGE);
+            }
         }
     }
 }
