@@ -7,11 +7,12 @@ import java.io.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 public class DishwasherGUI {
     private DishwasherList dishwasherList;
     private JFrame frame;
-    private JTextField idField, typeField, modelField, enginePowerField, maxSpeedField, priceField, releaseDateField;
+    private JTextField idField, typeField, modelField, enginePowerField, maxSpeedField, priceField, releaseDateField, searchField;
     private JTable table;
     private DefaultTableModel tableModel;
     private SimpleDateFormat dateFormat;
@@ -26,59 +27,80 @@ public class DishwasherGUI {
     public void createAndShowGUI() {
         frame = new JFrame("Dishwasher Manager");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(500, 400);
+        frame.setSize(800, 600);
 
-        JPanel inputPanel = new JPanel(new GridLayout(8, 2));
+        JPanel inputPanel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(5, 5, 5, 5); // Отступы между компонентами
 
-        inputPanel.add(new JLabel("ID:"));
-        idField = new JTextField();
-        inputPanel.add(idField);
+        // Настройка полей ввода и меток
+        idField = new JTextField(15);
+        typeField = new JTextField(15);
+        modelField = new JTextField(15);
+        enginePowerField = new JTextField(15);
+        maxSpeedField = new JTextField(15);
+        releaseDateField = new JTextField(15);
+        priceField = new JTextField(15);
 
-        inputPanel.add(new JLabel("Type:"));
-        typeField = new JTextField();
-        inputPanel.add(typeField);
+        String[] labels = {"ID:", "Type:", "Model:", "Engine Power:", "Max Speed:", "Release Date (yyyy-MM-dd):", "Price:"};
+        JTextField[] fields = {idField, typeField, modelField, enginePowerField, maxSpeedField, releaseDateField, priceField};
 
-        inputPanel.add(new JLabel("Model:"));
-        modelField = new JTextField();
-        inputPanel.add(modelField);
+        for (int i = 0; i < labels.length; i++) {
+            gbc.gridx = 0;
+            gbc.gridy = i;
+            inputPanel.add(new JLabel(labels[i]), gbc);
 
-        inputPanel.add(new JLabel("Engine Power:"));
-        enginePowerField = new JTextField();
-        inputPanel.add(enginePowerField);
+            gbc.gridx = 1;
+            inputPanel.add(fields[i], gbc);
+        }
 
-        inputPanel.add(new JLabel("Max Speed:"));
-        maxSpeedField = new JTextField();
-        inputPanel.add(maxSpeedField);
-
-        inputPanel.add(new JLabel("Release Date (yyyy-MM-dd):"));
-        releaseDateField = new JTextField();
-        inputPanel.add(releaseDateField);
-
-        inputPanel.add(new JLabel("Price:"));
-        priceField = new JTextField();
-        inputPanel.add(priceField);
-
+        // Настройка кнопок
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 0));
         JButton addButton = new JButton("Add Dishwasher");
         addButton.addActionListener(new AddButtonListener());
-        inputPanel.add(addButton);
+        buttonPanel.add(addButton);
 
-        tableModel = new DefaultTableModel(new Object[]{"ID", "Type", "Model", "Engine Power", "Max Speed", "Release Date", "Price"}, 0);
+        JButton updateButton = new JButton("Update Dishwasher");
+        updateButton.addActionListener(new UpdateButtonListener());
+        buttonPanel.add(updateButton);
+
+        JButton deleteButton = new JButton("Delete Dishwasher");
+        deleteButton.addActionListener(new DeleteButtonListener());
+        buttonPanel.add(deleteButton);
+
+        gbc.gridx = 0;
+        gbc.gridy = labels.length;
+        gbc.gridwidth = 2;
+        inputPanel.add(buttonPanel, gbc);
+
+        tableModel = new DefaultTableModel(
+                new Object[]{"ID", "Type", "Model", "Engine Power", "Max Speed", "Release Date", "Price"}, 0);
         table = new JTable(tableModel);
         JScrollPane tableScrollPane = new JScrollPane(table);
 
-        JPanel actionPanel = new JPanel();
-        JButton saveButton = new JButton("Save to File");
+        JPanel actionPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        searchField = new JTextField(15);
+        JButton searchButton = new JButton("Search");
+        searchButton.addActionListener(new SearchButtonListener(searchField));
+
+        JButton saveButton = new JButton("Save to DB");
         saveButton.addActionListener(new SaveButtonListener());
         JButton loadButton = new JButton("Load from File");
         loadButton.addActionListener(new LoadButtonListener());
-        JButton sortButton = new JButton("Sort by Price");
-        sortButton.addActionListener(new SortButtonListener());
+
+        JComboBox<String> sortComboBox = new JComboBox<>(
+                new String[]{"Sort by Price", "Sort by Speed", "Sort by Engine Power"});
+        sortComboBox.addActionListener(new SortComboBoxListener());
+
         JButton archiveButton = new JButton("Create Archive");
         archiveButton.addActionListener(new ArchiveButtonListener());
 
+        actionPanel.add(searchField);
+        actionPanel.add(searchButton);
         actionPanel.add(saveButton);
         actionPanel.add(loadButton);
-        actionPanel.add(sortButton);
+        actionPanel.add(sortComboBox);
         actionPanel.add(archiveButton);
 
         frame.setLayout(new BorderLayout());
@@ -87,6 +109,22 @@ public class DishwasherGUI {
         frame.add(actionPanel, BorderLayout.NORTH);
 
         frame.setVisible(true);
+    }
+
+
+    private void updateTable(List<Dishwasher> dishwashers) {
+        tableModel.setRowCount(0);
+        for (Dishwasher dishwasher : dishwashers) {
+            tableModel.addRow(new Object[]{
+                    dishwasher.getId(),
+                    dishwasher.getType(),
+                    dishwasher.getModel(),
+                    dishwasher.getEnginePower(),
+                    dishwasher.getMaxSpeed(),
+                    dateFormat.format(dishwasher.getReleaseDate()),
+                    dishwasher.getPrice()
+            });
+        }
     }
 
     private class AddButtonListener implements ActionListener {
@@ -129,6 +167,31 @@ public class DishwasherGUI {
         }
     }
 
+    private class SearchButtonListener implements ActionListener {
+        private final JTextField searchField;
+
+        public SearchButtonListener(JTextField searchField) {
+            this.searchField = searchField;
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            String query = searchField.getText().toLowerCase();
+            if (query.isEmpty()) {
+                updateTable(dishwasherList.getDishwashers());
+                return;
+            }
+            var filteredList = dishwasherList.getDishwashers().stream()
+                    .filter(d -> d.toString().toLowerCase().contains(query))
+                    .toList();
+            if (filteredList.isEmpty()) {
+                JOptionPane.showMessageDialog(frame, "No results found for: " + query, "Search", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                updateTable(filteredList);
+            }
+        }
+    }
+
     private class SaveButtonListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -147,71 +210,131 @@ public class DishwasherGUI {
     private class LoadButtonListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            try {
-                dishwasherList.getDishwashers().clear();
-                tableModel.setRowCount(0);
+            JFileChooser fileChooser = new JFileChooser();
+            int result = fileChooser.showOpenDialog(frame);
 
-                File file = DatabaseConnection.getInstance().getDatabaseFile();
-                try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-                    String line;
-                    while ((line = reader.readLine()) != null) {
-                        String[] parts = line.split(",");
-                        if (parts.length != 7) {
-                            throw new IllegalArgumentException("Invalid data format: " + line);
-                        }
+            if (result == JFileChooser.APPROVE_OPTION) {
+                File selectedFile = fileChooser.getSelectedFile();
+                String fileName = selectedFile.getName().toLowerCase();
 
-                        int id = Integer.parseInt(parts[0].trim());
-                        String type = parts[1].trim();
-                        String model = parts[2].trim();
-                        double enginePower = Double.parseDouble(parts[3].trim());
-                        double maxSpeed = Double.parseDouble(parts[4].trim());
-                        Date releaseDate = dateFormat.parse(parts[5].trim());
-                        double price = Double.parseDouble(parts[6].trim());
-
-                        Dishwasher dishwasher = new DishwasherBuilder()
-                                .setId(id)
-                                .setType(type)
-                                .setModel(model)
-                                .setEnginePower(enginePower)
-                                .setMaxSpeed(maxSpeed)
-                                .setReleaseDate(releaseDate)
-                                .setPrice(price)
-                                .build();
-
-                        dishwasherList.addDishwasher(dishwasher);
-                        tableModel.addRow(new Object[]{id, type, model, enginePower, maxSpeed, dateFormat.format(releaseDate), price});
+                try {
+                    List<Dishwasher> dishwashers;
+                    if (fileName.endsWith(".json")) {
+                        dishwashers = JSONFileHandler.readFromFile(selectedFile.getPath());
+                    } else if (fileName.endsWith(".xml")) {
+                        dishwashers = XMLFileHandler.readFromFile(selectedFile.getPath());
+                    } else if (fileName.endsWith(".txt")) {
+                        dishwashers = FileHandler.readFromFile(selectedFile.getPath());
+                    } else {
+                        JOptionPane.showMessageDialog(frame, "Unsupported file type. Please select a JSON or XML file.", "Error", JOptionPane.ERROR_MESSAGE);
+                        return;
                     }
-                }
 
-                JOptionPane.showMessageDialog(frame, "Data loaded from file.", "Success", JOptionPane.INFORMATION_MESSAGE);
-            } catch (ParseException | IOException | IllegalArgumentException ex) {
-                JOptionPane.showMessageDialog(frame, "Error loading data: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                    for (Dishwasher dishwasher : dishwashers) {
+                        dishwasherList.addDishwasher(dishwasher);
+                        tableModel.addRow(new Object[]{
+                                dishwasher.getId(),
+                                dishwasher.getType(),
+                                dishwasher.getModel(),
+                                dishwasher.getEnginePower(),
+                                dishwasher.getMaxSpeed(),
+                                dateFormat.format(dishwasher.getReleaseDate()),
+                                dishwasher.getPrice()
+                        });
+                    }
+
+                    JOptionPane.showMessageDialog(frame, "Data loaded successfully from: " + selectedFile.getName(), "Success", JOptionPane.INFORMATION_MESSAGE);
+
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(frame, "Error loading data: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            } else {
+                JOptionPane.showMessageDialog(frame, "File selection canceled.", "Info", JOptionPane.INFORMATION_MESSAGE);
             }
         }
     }
 
 
-    private class SortButtonListener implements ActionListener {
+    private class SortComboBoxListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            dishwasherList.sortByPrice();
-            tableModel.setRowCount(0);
-            for (Dishwasher dishwasher : dishwasherList.getDishwashers()) {
-                tableModel.addRow(new Object[]{
-                        dishwasher.getId(),
-                        dishwasher.getType(),
-                        dishwasher.getModel(),
-                        dishwasher.getEnginePower(),
-                        dishwasher.getMaxSpeed(),
-                        dateFormat.format(dishwasher.getReleaseDate()),
-                        dishwasher.getPrice()
-                });
+            JComboBox<?> comboBox = (JComboBox<?>) e.getSource();
+            String selectedOption = (String) comboBox.getSelectedItem();
+            if ("Sort by Price".equals(selectedOption)) {
+                dishwasherList.sortByPrice();
+            } else if ("Sort by Speed".equals(selectedOption)) {
+                dishwasherList.sortBySpeed();
+            } else if ("Sort by Engine Power".equals(selectedOption)) {
+                dishwasherList.sortByEnginePower();
             }
-            JOptionPane.showMessageDialog(frame, "Data sorted by price.", "Success", JOptionPane.INFORMATION_MESSAGE);
+            updateTable(dishwasherList.getDishwashers());
+        }
+    }
+    private class DeleteButtonListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            int selectedRow = table.getSelectedRow();
+            if (selectedRow == -1) {
+                JOptionPane.showMessageDialog(frame, "Please select a dishwasher to delete.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            int id = (int) tableModel.getValueAt(selectedRow, 0);
+            dishwasherList.removeDishwasher(id);
+            tableModel.removeRow(selectedRow);
+
+            JOptionPane.showMessageDialog(frame, "Dishwasher deleted successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
         }
     }
 
-    private class ArchiveButtonListener implements ActionListener {
+    private class UpdateButtonListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            int selectedRow = table.getSelectedRow();
+            if (selectedRow == -1) {
+                JOptionPane.showMessageDialog(frame, "Please select a dishwasher to update.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            try {
+                int id = Integer.parseInt(idField.getText());
+                String type = typeField.getText();
+                String model = modelField.getText();
+                double enginePower = Double.parseDouble(enginePowerField.getText());
+                double maxSpeed = Double.parseDouble(maxSpeedField.getText());
+                Date releaseDate = dateFormat.parse(releaseDateField.getText());
+                double price = Double.parseDouble(priceField.getText());
+
+                Dishwasher updatedDishwasher = new DishwasherBuilder()
+                        .setId(id)
+                        .setType(type)
+                        .setModel(model)
+                        .setEnginePower(enginePower)
+                        .setMaxSpeed(maxSpeed)
+                        .setReleaseDate(releaseDate)
+                        .setPrice(price)
+                        .build();
+
+                dishwasherList.getDishwashers().set(selectedRow, updatedDishwasher);
+
+                tableModel.setValueAt(id, selectedRow, 0);
+                tableModel.setValueAt(type, selectedRow, 1);
+                tableModel.setValueAt(model, selectedRow, 2);
+                tableModel.setValueAt(enginePower, selectedRow, 3);
+                tableModel.setValueAt(maxSpeed, selectedRow, 4);
+                tableModel.setValueAt(dateFormat.format(releaseDate), selectedRow, 5);
+                tableModel.setValueAt(price, selectedRow, 6);
+
+                JOptionPane.showMessageDialog(frame, "Dishwasher updated successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
+
+            } catch (NumberFormatException | ParseException ex) {
+                JOptionPane.showMessageDialog(frame, "Invalid input: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+
+
+private class ArchiveButtonListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
             JOptionPane.showMessageDialog(frame, "Archiving not implemented yet.", "Information", JOptionPane.INFORMATION_MESSAGE);
